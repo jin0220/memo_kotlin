@@ -2,7 +2,9 @@ package com.example.memo.view
 
 import android.content.Intent
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.memo.databinding.RecyclerviewMainBinding
@@ -10,9 +12,11 @@ import com.example.memo.model.Memo
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainRecyclerAdapter() : RecyclerView.Adapter<MainRecyclerAdapter.Holder>(){
+class MainRecyclerAdapter(val checkBoxVisible: CheckBoxVisible) : RecyclerView.Adapter<MainRecyclerAdapter.Holder>(){
 
     private var listDate:List<Memo> = listOf()
+    private var visible = 0
+    private var checkAll = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding = RecyclerviewMainBinding.inflate(LayoutInflater.from(parent.context),parent,false)
@@ -27,7 +31,7 @@ class MainRecyclerAdapter() : RecyclerView.Adapter<MainRecyclerAdapter.Holder>()
         return listDate.size
     }
 
-    class Holder(val binding: RecyclerviewMainBinding): RecyclerView.ViewHolder(binding.root){
+    inner class Holder(val binding: RecyclerviewMainBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(memo: Memo){
             with(binding) {
                 title.text = memo.title
@@ -47,11 +51,30 @@ class MainRecyclerAdapter() : RecyclerView.Adapter<MainRecyclerAdapter.Holder>()
                 }
                 date.text = sdf?.format(memo.datetime)
 
+                //체크박스
+                if(visible == 0)
+                    checkbox.visibility = View.INVISIBLE
+                else
+                    checkbox.visibility = View.VISIBLE
+
+                // 체크박스 전체 선택/해제
+                checkbox.isChecked = checkAll
+
                 contentBox.setOnClickListener {
-                    val intent = Intent(contentBox.context, WriteActivity::class.java)
-                    intent.putExtra("mode", "read")
-                    intent.putExtra("no", memo.no)
-                    ContextCompat.startActivity(contentBox.context, intent, null)
+                    if(visible == 0) {
+                        val intent = Intent(contentBox.context, WriteActivity::class.java)
+                        intent.putExtra("mode", "read")
+                        intent.putExtra("no", memo.no)
+                        ContextCompat.startActivity(contentBox.context, intent, null)
+                    }
+                    else {
+                        checkbox.isChecked = !checkbox.isChecked
+                    }
+                }
+
+                contentBox.setOnLongClickListener{
+                    checkBoxVisible.adapterUpdate(1)
+                    return@setOnLongClickListener true
                 }
             }
         }
@@ -60,5 +83,13 @@ class MainRecyclerAdapter() : RecyclerView.Adapter<MainRecyclerAdapter.Holder>()
     fun setMemo(memo: List<Memo>){
         this.listDate = memo
         notifyDataSetChanged()
+    }
+
+    fun updateCheckBox(n : Int){
+        visible = n
+    }
+
+    fun setCheckAll(boolean: Boolean){
+        checkAll = boolean
     }
 }
