@@ -96,7 +96,12 @@ class MainActivity : AppCompatActivity(), CheckBoxVisible {
                     true
                 }
                 2 -> {
-                    Log.d("확인", "클릭")
+                    if(adapter.selectListData.isNotEmpty()) {
+                        for (i in adapter.selectListData)
+                            memoViewModel.delete(i)
+                        adapter.notifyDataSetChanged()
+                    }
+                    mode.finish()
                     true
                 }
                 else -> false
@@ -105,6 +110,8 @@ class MainActivity : AppCompatActivity(), CheckBoxVisible {
 
         override fun onDestroyActionMode(mode: ActionMode) {
             adapterUpdate(0)
+            checkAll = false
+            adapter.setCheckAll(checkAll)
         }
     }
 

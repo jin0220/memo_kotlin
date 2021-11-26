@@ -1,6 +1,7 @@
 package com.example.memo.view
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.memo.databinding.RecyclerviewMainBinding
 import com.example.memo.model.Memo
+import com.example.memo.viewModel.MemoViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -17,6 +19,7 @@ class MainRecyclerAdapter(val checkBoxVisible: CheckBoxVisible) : RecyclerView.A
     private var listDate:List<Memo> = listOf()
     private var visible = 0
     private var checkAll = false
+    var selectListData:ArrayList<Int> = arrayListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding = RecyclerviewMainBinding.inflate(LayoutInflater.from(parent.context),parent,false)
@@ -75,6 +78,16 @@ class MainRecyclerAdapter(val checkBoxVisible: CheckBoxVisible) : RecyclerView.A
                 contentBox.setOnLongClickListener{
                     checkBoxVisible.adapterUpdate(1)
                     return@setOnLongClickListener true
+                }
+
+                //체크가 true 이면 배열 담고 아니면 배열에서 삭제
+                checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
+                    if(checkbox.isChecked) {
+                        memo.no?.let { selectListData.add(it) }
+                    }
+                    else {
+                        memo.no?.let { selectListData.remove(it) }
+                    }
                 }
             }
         }
