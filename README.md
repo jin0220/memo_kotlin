@@ -6,6 +6,7 @@
 - 개발 환경: Android Studio
 - 개발 언어: Kotiln
 - 데이터베이스: Room
+- mvvm 적용
 
 
 ## 애플리케이션 구조
